@@ -12,7 +12,13 @@ class Document(BaseModel):
 
 
 class Embedding(BaseModel):
-    vector: ndarray[float32] = None
+    vector: ndarray[float32]
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class Collection(BaseModel):
+    name: str
+    documents: Optional[List[Document]] = None
+    embeddings: Optional[List[Embedding]] = None
