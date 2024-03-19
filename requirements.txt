@@ -1,0 +1,4 @@
+pydantic
+numpy
+sentence-transformers
+pytest
