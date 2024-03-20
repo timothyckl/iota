@@ -22,3 +22,8 @@ class Collection(BaseModel):
     name: str
     documents: Optional[List[Document]] = None
     embeddings: Optional[List[Embedding]] = None
+
+    def __str__(self, include_embeddings: bool = False) -> str:
+        embedding_repr = "None" if not include_embeddings else self.embeddings
+        string = f"Collection(documents={self.documents}, embeddings={embedding_repr})"
+        return string

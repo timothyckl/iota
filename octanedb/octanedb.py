@@ -2,8 +2,8 @@ from typing import Dict, List, Optional, Union
 
 from sentence_transformers import SentenceTransformer
 
-from octane.models import Collection, Document, Embedding
-from octane.utils import ALGORITHM_LOOKUP
+from octanedb.models import Collection, Document, Embedding
+from octanedb.utils import ALGORITHM_LOOKUP
 
 
 class OctaneDB:
@@ -46,10 +46,16 @@ class OctaneDB:
         self._collection = Collection(
             name=name, documents=documents, embeddings=embeddings
         )
-        
+
         if persist:
             # serialize collection to path
             pass
+
+    def get_collection(self, include_embedding: bool = False):
+        if self._collection is None:
+            raise Exception("No existing collection")
+        
+        return self._collection.__str__(include_embeddings=include_embedding)
 
     def add_documents(self, documents: List[Document]) -> None:
         if self._collection is None:
