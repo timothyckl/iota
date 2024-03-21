@@ -62,6 +62,9 @@ class IotaDB:
         embeddings = [self._get_embedding(doc.text) for doc in documents]
         self._collection.add(documents=documents, embeddings=embeddings)
 
+    def get_documents(self, ids: List[Union[str, int]]) -> List[Document]:
+        pass
+
     def update_document(
         self,
         id: Union[str, int],
