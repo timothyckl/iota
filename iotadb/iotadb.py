@@ -7,13 +7,13 @@ from iotadb.utils import ALGORITHM_LOOKUP
 class IotaDB:
     def __init__(
         self,
-        sim_func: str = "cosine_similarity",
+        metric: str = "cosine",
         embed_model: str = "all-mpnet-base-v2",
     ) -> None:
-        if sim_func not in ALGORITHM_LOOKUP.keys():
+        if metric not in ALGORITHM_LOOKUP.keys():
             raise ValueError("Invalid search algorithm specified.")
 
-        self.sim_func = ALGORITHM_LOOKUP[sim_func]
+        self.dist_func = ALGORITHM_LOOKUP[metric]
         self.embed_model = EmbedModel(name=embed_model)
         self._collection = None
 
@@ -34,7 +34,6 @@ class IotaDB:
 
         if documents is not None:
             embeddings = [self._get_embedding(doc.text) for doc in documents]
-
         else:
             documents = []
             embeddings = []
@@ -58,6 +57,19 @@ class IotaDB:
             raise Exception(
                 "No collection exists. Create a collection before adding documents."
             )
+
+        embeddings = [self._get_embedding(doc.text) for doc in documents]
+        self._collection.add(documents=documents, embeddings=embeddings)
+
+    def update_document(
+        self,
+    ):
+        pass
+
+    def remove_document(
+        self,
+    ):
+        pass
 
     def _get_embedding(self, text: str):
         return self.embed_model(text)

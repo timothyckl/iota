@@ -11,10 +11,10 @@ class EmbedModel:
     name: str
     func: Callable = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.func = SentenceTransformer(self.name)
 
-    def __call__(self, input: str):
+    def __call__(self, input: str) -> None:
         return self.func.encode(input)
 
 
@@ -30,6 +30,12 @@ class Collection:
     name: str
     documents: Optional[List[Document]] = None
     embeddings: Optional[List[ndarray[float32]]] = None
+
+    def add(
+        self, documents: List[Document], embeddings: List[ndarray[float32]]
+    ) -> None:
+        self.documents.extend(documents)
+        self.embeddings.extend(embeddings)
 
     def __str__(self, include_embeddings: bool = False) -> str:
         embedding_repr = "None" if not include_embeddings else self.embeddings
