@@ -1,2 +1,2 @@
 from iotadb.iotadb import IotaDB
-from iotadb.models import Document
+from iotadb.schemas import Document

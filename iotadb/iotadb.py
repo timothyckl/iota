@@ -1,8 +1,6 @@
 from typing import List, Optional
 
-from sentence_transformers import SentenceTransformer
-
-from iotadb.models import Collection, Document, Embedding
+from iotadb.schemas import Collection, Document, EmbedModel
 from iotadb.utils import ALGORITHM_LOOKUP
 
 
@@ -16,7 +14,7 @@ class IotaDB:
             raise ValueError("Invalid search algorithm specified.")
 
         self.sim_func = ALGORITHM_LOOKUP[sim_func]
-        self.embed_model = SentenceTransformer(embed_model)
+        self.embed_model = EmbedModel(name=embed_model)
         self._collection = None
 
     def create_collection(
@@ -35,9 +33,7 @@ class IotaDB:
             raise ValueError("Path must be specified when persisting.")
 
         if documents is not None:
-            embeddings = [
-                Embedding(vector=self._get_embedding(doc.text)) for doc in documents
-            ]
+            embeddings = [self._get_embedding(doc.text) for doc in documents]
 
         else:
             documents = []
@@ -64,4 +60,4 @@ class IotaDB:
             )
 
     def _get_embedding(self, text: str):
-        return self.embed_model.encode(text)
+        return self.embed_model(text)
