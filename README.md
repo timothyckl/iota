@@ -2,7 +2,9 @@
 
 ## Installation
 
-```pip install iotadb```
+```
+pip install iotadb
+```
 
 ## Usage
 
