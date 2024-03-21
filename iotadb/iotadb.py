@@ -1,12 +1,12 @@
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 from sentence_transformers import SentenceTransformer
 
-from octanedb.models import Collection, Document, Embedding
-from octanedb.utils import ALGORITHM_LOOKUP
+from iotadb.models import Collection, Document, Embedding
+from iotadb.utils import ALGORITHM_LOOKUP
 
 
-class OctaneDB:
+class IotaDB:
     def __init__(
         self,
         sim_func: str = "cosine_similarity",
@@ -47,14 +47,14 @@ class OctaneDB:
             name=name, documents=documents, embeddings=embeddings
         )
 
+        # serialize collection to path
         if persist:
-            # serialize collection to path
             pass
 
     def get_collection(self, include_embedding: bool = False):
         if self._collection is None:
             raise Exception("No existing collection")
-        
+
         return self._collection.__str__(include_embeddings=include_embedding)
 
     def add_documents(self, documents: List[Document]) -> None:
