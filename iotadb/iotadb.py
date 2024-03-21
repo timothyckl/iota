@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Literal, Optional, Union
 
 from iotadb.schemas import Collection, Document, EmbedModel
 from iotadb.utils import ALGORITHM_LOOKUP
@@ -7,7 +7,7 @@ from iotadb.utils import ALGORITHM_LOOKUP
 class IotaDB:
     def __init__(
         self,
-        metric: str = "cosine",
+        metric: Literal["dot", "cosine", "euclidean"] = "cosine",
         embed_model: str = "all-mpnet-base-v2",
     ) -> None:
         if metric not in ALGORITHM_LOOKUP.keys():
@@ -32,11 +32,12 @@ class IotaDB:
         if persist and path is None:
             raise ValueError("Path must be specified when persisting.")
 
-        if documents is not None:
-            embeddings = [self._get_embedding(doc.text) for doc in documents]
-        else:
-            documents = []
-            embeddings = []
+        documents = [] if documents is None else documents
+        embeddings = (
+            []
+            if documents is None
+            else [self._get_embedding(doc.text) for doc in documents]
+        )
 
         self._collection = Collection(
             name=name, documents=documents, embeddings=embeddings
@@ -46,7 +47,7 @@ class IotaDB:
         if persist:
             pass
 
-    def get_collection(self, include_embedding: bool = False):
+    def get_collection(self, include_embedding: bool = False) -> None:
         if self._collection is None:
             raise Exception("No existing collection")
 
@@ -63,12 +64,13 @@ class IotaDB:
 
     def update_document(
         self,
-    ):
+        id: Union[str, int],
+        text: str,
+        metadata: Optional[Dict[str, Union[str, int, List, Dict]]] = None,
+    ) -> None:
         pass
 
-    def remove_document(
-        self,
-    ):
+    def remove_document(self, id: Union[str, int]) -> None:
         pass
 
     def _get_embedding(self, text: str):
