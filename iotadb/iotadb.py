@@ -72,9 +72,7 @@ class IotaDB:
         self._collection.add(documents=documents, embeddings=embeddings)
 
     def get_documents(
-        self, 
-        ids: List[Union[str, int]], 
-        include_embeddings: bool = False
+        self, ids: List[Union[str, int]], include_embeddings: bool = False
     ) -> Union[List[Document], Iterable[Tuple]]:
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
@@ -82,7 +80,7 @@ class IotaDB:
         indices = [
             idx for idx, doc in enumerate(self._collection.documents) if doc.id in ids
         ]
-        
+
         if len(indices) == 0:
             raise Exception("No documents found.")
 
@@ -103,6 +101,15 @@ class IotaDB:
         pass
 
     def remove_document(self, id: Union[str, int]) -> None:
+        pass
+
+    def search(
+        self,
+        query: str,
+        search_type: Literal["brute-force", "ivf"] = "brute-force",
+        quantize: bool = False,
+        return_similarities: bool = False,
+    ) -> Union[List[Document], Iterable[Tuple]]:
         pass
 
     def _get_embedding(self, text: str):
