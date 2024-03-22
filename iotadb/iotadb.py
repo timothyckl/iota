@@ -13,7 +13,7 @@ class IotaDB:
         embed_model: str = "all-mpnet-base-v2",
     ) -> None:
         if metric not in ALGORITHM_LOOKUP.keys():
-            raise NotADirectoryError("Algorithm not implemented.")
+            raise NotImplementedError("Algorithm not implemented.")
 
         self.dist_func = ALGORITHM_LOOKUP[metric]
         self.embed_model = EmbedModel(name=embed_model)
