@@ -1,3 +1,5 @@
+import os
+from pickle import HIGHEST_PROTOCOL, dump, load
 from typing import Dict, List, Literal, Optional, Union
 
 from iotadb.schemas import Collection, Document, EmbedModel
@@ -22,15 +24,17 @@ class IotaDB:
         name: str,
         documents: Optional[List[Document]] = None,
         persist: bool = False,
-        path: Optional[str] = None,
+        persist_dir: str = "",
     ) -> None:
         """
         creates a collection,
         this method can be called with or without documents,
         embeddings will be computed
         """
-        if persist and path is None:
+        if persist and persist_dir == "":
             raise ValueError("Path must be specified when persisting.")
+        else:
+            os.makedirs(persist_dir, exist_ok=True)
 
         documents = [] if documents is None else documents
         embeddings = (
@@ -43,9 +47,15 @@ class IotaDB:
             name=name, documents=documents, embeddings=embeddings
         )
 
-        # serialize collection to path
         if persist:
-            pass
+            fname = f"{self._collection.name}.pickle"
+            with open(os.path.join(persist_dir, fname), "wb") as f:
+                dump(self._collection, f, HIGHEST_PROTOCOL)
+
+    def load_collection(
+        self,
+    ) -> None:
+        pass
 
     def get_collection(self, include_embedding: bool = False) -> None:
         if self._collection is None:
