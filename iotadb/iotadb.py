@@ -1,6 +1,6 @@
 import os
 from pickle import HIGHEST_PROTOCOL, dump, load
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, Iterable, List, Literal, Optional, Tuple, Union
 
 from iotadb.schemas import Collection, Document, EmbedModel
 from iotadb.utils import ALGORITHM_LOOKUP
@@ -24,14 +24,14 @@ class IotaDB:
         name: str,
         documents: Optional[List[Document]] = None,
         persist: bool = False,
-        persist_dir: str = "",
+        persist_dir: Optional[str] = None,
     ) -> None:
         """
         creates a collection,
         this method can be called with or without documents,
         embeddings will be computed
         """
-        if persist and persist_dir == "":
+        if persist and persist_dir is None:
             raise ValueError("Path must be specified when persisting.")
         else:
             os.makedirs(persist_dir, exist_ok=True)
@@ -52,14 +52,13 @@ class IotaDB:
             with open(os.path.join(persist_dir, fname), "wb") as f:
                 dump(self._collection, f, HIGHEST_PROTOCOL)
 
-    def load_collection(
-        self,
-    ) -> None:
-        pass
+    def load_collection(self, file_path: str) -> None:
+        with open(file_path, "rb") as f:
+            self._collection = load(f)
 
     def get_collection(self, include_embedding: bool = False) -> None:
         if self._collection is None:
-            raise Exception("No existing collection")
+            raise Exception("No existing collection. Create one first.")
 
         return self._collection.__str__(include_embeddings=include_embedding)
 
@@ -72,8 +71,28 @@ class IotaDB:
         embeddings = [self._get_embedding(doc.text) for doc in documents]
         self._collection.add(documents=documents, embeddings=embeddings)
 
-    def get_documents(self, ids: List[Union[str, int]]) -> List[Document]:
-        pass
+    def get_documents(
+        self, 
+        ids: List[Union[str, int]], 
+        include_embeddings: bool = False
+    ) -> Union[List[Document], Iterable[Tuple]]:
+        if self._collection is None:
+            raise Exception("No existing collection. Create one first.")
+
+        indices = [
+            idx for idx, doc in enumerate(self._collection.documents) if doc.id in ids
+        ]
+        
+        if len(indices) == 0:
+            raise Exception("No documents found.")
+
+        documents = [self._collection.documents[i] for i in indices]
+
+        if include_embeddings:
+            embeddings = [self._collection.embeddings[i] for i in indices]
+            return zip(documents, embeddings)
+
+        return documents
 
     def update_document(
         self,
