@@ -9,13 +9,18 @@ from sentence_transformers import SentenceTransformer
 @dataclass
 class EmbedModel:
     name: str
-    func: Callable = field(init=False)
+    model: SentenceTransformer = field(init=False)
+    tokenizer: Callable = field(init=False)
 
     def __post_init__(self) -> None:
-        self.func = SentenceTransformer(self.name)
+        self.model = SentenceTransformer(self.name)
+        self.tokenizer = self.model[0].tokenizer
 
-    def __call__(self, input: str) -> None:
-        return self.func.encode(input)
+    def tokenize(self, input: str) -> List[str]:
+        return self.tokenizer.tokenize(input)
+
+    def encode(self, input: str) -> List[int]:
+        return self.model.encode(input)
 
 
 @dataclass
@@ -36,6 +41,41 @@ class Collection:
     ) -> None:
         self.documents.extend(documents)
         self.embeddings.extend(embeddings)
+
+    def update(
+        self,
+        index: Union[str, int],
+        text: str,
+        embedding: List[ndarray[float32]],
+        metadata: Dict[str, Union[str, int, List, Dict]],
+    ) -> None:
+        # get index of document with id=id
+        self.documents[index].text = text
+        self.documents[index].metadata = metadata
+        self.embeddings[index] = embedding
+
+    def remove(self, index: Union[str, int]) -> None:
+        del self.documents[index]
+        del self.embeddings[index]
+
+    def get_indices(self, target_ids: Union[List[Union[str, int]], str, int]):
+        if not isinstance(target_ids, (list, str, int)):
+            raise ValueError("Invalid target id. Ensure target documents exists.")
+        try:
+            if isinstance(target_ids, list):
+                return [
+                    idx
+                    for idx, doc in enumerate(self.documents)
+                    if doc.id in target_ids
+                ]
+            else:
+                return [
+                    idx
+                    for idx, doc in enumerate(self.documents)
+                    if doc.id == target_ids
+                ][0]
+        except IndexError:
+            raise IndexError("One or multiple target ids within  do not exist.")
 
     def __str__(self, include_embeddings: bool = False) -> str:
         embedding_repr = "None" if not include_embeddings else self.embeddings

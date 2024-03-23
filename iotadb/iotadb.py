@@ -2,6 +2,8 @@ import os
 from pickle import HIGHEST_PROTOCOL, dump, load
 from typing import Dict, Iterable, List, Literal, Optional, Tuple, Union
 
+from numpy import argsort, vstack
+
 from iotadb.schemas import Collection, Document, EmbedModel
 from iotadb.utils import ALGORITHM_LOOKUP
 
@@ -17,6 +19,7 @@ class IotaDB:
 
         self.dist_func = ALGORITHM_LOOKUP[metric]
         self.embed_model = EmbedModel(name=embed_model)
+        self.tokenizer = self.embed_model.tokenizer
         self._collection = None
 
     def create_collection(
@@ -77,13 +80,7 @@ class IotaDB:
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
 
-        indices = [
-            idx for idx, doc in enumerate(self._collection.documents) if doc.id in ids
-        ]
-
-        if len(indices) == 0:
-            raise Exception("No documents found.")
-
+        indices = self._collection.get_indices(target_ids=ids)
         documents = [self._collection.documents[i] for i in indices]
 
         if include_embeddings:
@@ -95,22 +92,44 @@ class IotaDB:
     def update_document(
         self,
         id: Union[str, int],
-        text: str,
-        metadata: Optional[Dict[str, Union[str, int, List, Dict]]] = None,
+        new_text: str,
+        new_metadata: Optional[Dict[str, Union[str, int, List, Dict]]] = None,
     ) -> None:
-        pass
+        if self._collection is None:
+            raise Exception("No existing collection. Create one first.")
+
+        index = self._collection.get_indices(target_ids=id)
+        new_embedding = self._get_embedding(new_text)
+
+        self._collection.update(
+            index=index, text=new_text, embedding=new_embedding, metadata=new_metadata
+        )
 
     def remove_document(self, id: Union[str, int]) -> None:
-        pass
+        if self._collection is None:
+            raise Exception("No existing collection. Create one first.")
+
+        index = self._collection.get_indices(target_ids=id)
+
+        self._collection.remove(index=index)
 
     def search(
         self,
         query: str,
-        search_type: Literal["brute-force", "ivf"] = "brute-force",
-        quantize: bool = False,
+        top_k: int = 10,
         return_similarities: bool = False,
-    ) -> Union[List[Document], Iterable[Tuple]]:
-        pass
+    ) -> List[Union[Document, Tuple[Document, float]]]:
+        query_vector = self._get_embedding(query)
+        vector_store = vstack(self._collection.embeddings)
+
+        similarities = self.dist_func(query_vector, vector_store)
+        indices = argsort(similarities)[-top_k:][::-1]
+        documents = self._collection.documents
+
+        if return_similarities:
+            return [(documents[idx], similarities[idx]) for idx in indices]
+
+        return [documents[idx] for idx in indices]
 
     def _get_embedding(self, text: str):
-        return self.embed_model(text)
+        return self.embed_model.encode(text)
