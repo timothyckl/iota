@@ -22,7 +22,7 @@ def euclidean(a, b, use_similarity=True):
     return similarities if use_similarity else distances
 
 
-ALGORITHM_LOOKUP = {
+OPSET_LOOKUP = {
     "dot": dot_product,
     "cosine": cosine_similarity,
     "euclidean": euclidean,

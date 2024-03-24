@@ -4,8 +4,8 @@ from typing import Dict, Iterable, List, Literal, Optional, Tuple, Union
 
 from numpy import argsort, float32, vstack
 
+from iotadb.metrics import OPSET_LOOKUP
 from iotadb.schemas import Collection, Document, EmbedModel
-from iotadb.utils import ALGORITHM_LOOKUP
 
 
 class IotaDB:
@@ -16,20 +16,19 @@ class IotaDB:
         persist: bool = False,
         persist_dir: Optional[str] = None,
     ) -> None:
-        if metric not in ALGORITHM_LOOKUP.keys():
+        if metric not in OPSET_LOOKUP.keys():
             raise NotImplementedError("Algorithm not implemented.")
-
-        self.dist_func = ALGORITHM_LOOKUP[metric]
-        self.embed_model = EmbedModel(name=embed_model)
-        self.tokenizer = self.embed_model.tokenizer
-
         if persist and persist_dir is None:
             raise ValueError("Path must be specified when persisting.")
 
+        self.sim_func = OPSET_LOOKUP[metric]
+        self.embed_model = EmbedModel(name=embed_model)
+        self.tokenizer = self.embed_model.tokenizer
         self.persist = persist
         self.persist_dir = persist_dir
-
         self._collection = None
+
+        os.makedirs(self.persist_dir, exist_ok=True)
 
     def create_collection(
         self,
@@ -41,9 +40,6 @@ class IotaDB:
         this method can be called with or without documents,
         embeddings will be computed
         """
-
-        os.makedirs(self.persist_dir, exist_ok=True)
-
         documents = [] if documents is None else documents
         embeddings = (
             []
@@ -119,7 +115,6 @@ class IotaDB:
             raise Exception("No existing collection. Create one first.")
 
         index = self._collection.get_indices(target_ids=id)
-
         self._collection.remove(index=index)
 
         if self.persist:
@@ -132,11 +127,13 @@ class IotaDB:
         return_similarities: bool = False,
     ) -> List[Union[Document, Tuple[Document, float32]]]:
         """Brute-force search"""
-
+        if self._collection is None:
+            raise Exception("No existing collection. Create one first.")
+        
         query_vector = self._get_embedding(query)
         vector_store = vstack(self._collection.embeddings)
 
-        similarities = self.dist_func(query_vector, vector_store)
+        similarities = self.sim_func(query_vector, vector_store)
         indices = argsort(similarities)[-top_k:][::-1]
         documents = self._collection.documents
 
