@@ -2,7 +2,7 @@ import os
 from pickle import HIGHEST_PROTOCOL, dump, load
 from typing import Dict, Iterable, List, Literal, Optional, Tuple, Union
 
-from numpy import argsort, vstack
+from numpy import argsort, float32, vstack
 
 from iotadb.schemas import Collection, Document, EmbedModel
 from iotadb.utils import ALGORITHM_LOOKUP
@@ -13,6 +13,8 @@ class IotaDB:
         self,
         metric: Literal["dot", "cosine", "euclidean"] = "cosine",
         embed_model: str = "all-mpnet-base-v2",
+        persist: bool = False,
+        persist_dir: Optional[str] = None,
     ) -> None:
         if metric not in ALGORITHM_LOOKUP.keys():
             raise NotImplementedError("Algorithm not implemented.")
@@ -20,24 +22,27 @@ class IotaDB:
         self.dist_func = ALGORITHM_LOOKUP[metric]
         self.embed_model = EmbedModel(name=embed_model)
         self.tokenizer = self.embed_model.tokenizer
+
+        if persist and persist_dir is None:
+            raise ValueError("Path must be specified when persisting.")
+
+        self.persist = persist
+        self.persist_dir = persist_dir
+
         self._collection = None
 
     def create_collection(
         self,
         name: str,
         documents: Optional[List[Document]] = None,
-        persist: bool = False,
-        persist_dir: Optional[str] = None,
     ) -> None:
         """
         creates a collection,
         this method can be called with or without documents,
         embeddings will be computed
         """
-        if persist and persist_dir is None:
-            raise ValueError("Path must be specified when persisting.")
-        else:
-            os.makedirs(persist_dir, exist_ok=True)
+
+        os.makedirs(self.persist_dir, exist_ok=True)
 
         documents = [] if documents is None else documents
         embeddings = (
@@ -50,10 +55,8 @@ class IotaDB:
             name=name, documents=documents, embeddings=embeddings
         )
 
-        if persist:
-            fname = f"{self._collection.name}.pickle"
-            with open(os.path.join(persist_dir, fname), "wb") as f:
-                dump(self._collection, f, HIGHEST_PROTOCOL)
+        if self.persist:
+            self._save_to_disk(f"{self._collection.name}.pickle")
 
     def load_collection(self, file_path: str) -> None:
         with open(file_path, "rb") as f:
@@ -73,6 +76,9 @@ class IotaDB:
 
         embeddings = [self._get_embedding(doc.text) for doc in documents]
         self._collection.add(documents=documents, embeddings=embeddings)
+
+        if self.persist:
+            self._save_to_disk(f"{self._collection.name}.pickle")
 
     def get_documents(
         self, ids: List[Union[str, int]], include_embeddings: bool = False
@@ -105,6 +111,9 @@ class IotaDB:
             index=index, text=new_text, embedding=new_embedding, metadata=new_metadata
         )
 
+        if self.persist:
+            self._save_to_disk(f"{self._collection.name}.pickle")
+
     def remove_document(self, id: Union[str, int]) -> None:
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
@@ -113,12 +122,17 @@ class IotaDB:
 
         self._collection.remove(index=index)
 
+        if self.persist:
+            self._save_to_disk(f"{self._collection.name}.pickle")
+
     def search(
         self,
         query: str,
         top_k: int = 10,
         return_similarities: bool = False,
-    ) -> List[Union[Document, Tuple[Document, float]]]:
+    ) -> List[Union[Document, Tuple[Document, float32]]]:
+        """Brute-force search"""
+
         query_vector = self._get_embedding(query)
         vector_store = vstack(self._collection.embeddings)
 
@@ -131,5 +145,9 @@ class IotaDB:
 
         return [documents[idx] for idx in indices]
 
-    def _get_embedding(self, text: str):
+    def _get_embedding(self, text: str) -> None:
         return self.embed_model.encode(text)
+
+    def _save_to_disk(self, fname: str) -> None:
+        with open(os.path.join(self.persist_dir, fname), "wb") as f:
+            dump(self._collection, f, HIGHEST_PROTOCOL)
