@@ -1,2 +1,2 @@
-from iotadb.iotadb import IotaDB
-from iotadb.schemas import Document
+from .iotadb import IotaDB
+from .schemas import Document

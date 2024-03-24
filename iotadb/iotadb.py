@@ -1,11 +1,10 @@
 import os
 from pickle import HIGHEST_PROTOCOL, dump, load
 from typing import Dict, Iterable, List, Literal, Optional, Tuple, Union
-
 from numpy import argsort, float32, vstack
 
-from iotadb.metrics import OPSET_LOOKUP
-from iotadb.schemas import Collection, Document, EmbedModel
+from .schemas import Collection, Document, EmbedModel
+from .metrics import OPSET_LOOKUP
 
 
 class IotaDB:
@@ -129,7 +128,7 @@ class IotaDB:
         """Brute-force search"""
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
-        
+
         query_vector = self._get_embedding(query)
         vector_store = vstack(self._collection.embeddings)
 
