@@ -13,7 +13,7 @@ from iotadb import IotaDB, Document
 
 docs = [
     Document(text="That is a happy dog"),
-    Document(text="That is a very happy perso"),
+    Document(text="That is a very happy person"),
     Document(text="Today is a sunny day")
 ]
 
