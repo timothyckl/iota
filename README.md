@@ -18,7 +18,7 @@ docs = [
 ]
 
 db = IotaDB()
-db.create_collection(name="my_collection", documents=doc)
+db.create_collection(name="my_collection", documents=docs)
 
 results = db.search("That is a happy person", return_similarities=True)
 
