@@ -27,7 +27,8 @@ class IotaDB:
         self.persist_dir = persist_dir
         self._collection = None
 
-        os.makedirs(self.persist_dir, exist_ok=True)
+        if self.persist:
+            os.makedirs(self.persist_dir, exist_ok=True)
 
     def create_collection(
         self,
@@ -141,9 +142,9 @@ class IotaDB:
 
         return [documents[idx] for idx in indices]
 
-    def _get_embedding(self, text: str) -> None:
+    def _get_embedding(self, text: str):
         return self.embed_model.encode(text)
 
-    def _save_to_disk(self, fname: str) -> None:
+    def _save_to_disk(self, fname: str):
         with open(os.path.join(self.persist_dir, fname), "wb") as f:
             dump(self._collection, f, HIGHEST_PROTOCOL)

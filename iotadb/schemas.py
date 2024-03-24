@@ -58,7 +58,7 @@ class Collection:
         del self.documents[index]
         del self.embeddings[index]
 
-    def get_indices(self, target_ids: Union[List[Union[str, int]], str, int]):
+    def get_indices(self, target_ids: Union[List[Union[str, int]], str, int]) -> Union[List[int], int]:
         if not isinstance(target_ids, (list, str, int)):
             raise ValueError("Invalid target id. Ensure target documents exists.")
         try:

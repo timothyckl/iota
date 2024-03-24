@@ -5,7 +5,7 @@ with open("./README.md", "r") as f:
 
 setup(
     name="iotadb",
-    version="0.0.3",
+    version="0.0.7",
     description="An easy-to-use, lightweight local embedding database.",
     packages=["iotadb"],
     long_description=long_desc,
@@ -19,7 +19,7 @@ setup(
         "Programming Language :: Python",
         "Operating System :: OS Independent",
     ],
-    install_requires=["numpy>=1.26.4", "sentence-transformers>=2.5.1"],
-    extras_require={"dev": ["pytest>=8.1.1", "twine>=5.0.0"]},
-    python_requires=">=3.11",
+    install_requires=["numpy", "sentence-transformers"],
+    extras_require={"dev": ["pytest", "twine"]},
+    python_requires=">=3.8",
 )
