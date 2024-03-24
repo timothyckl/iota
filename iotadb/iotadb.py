@@ -1,10 +1,11 @@
 import os
 from pickle import HIGHEST_PROTOCOL, dump, load
 from typing import Dict, Iterable, List, Literal, Optional, Tuple, Union
+
 from numpy import argsort, float32, vstack
 
-from .schemas import Collection, Document, EmbedModel
 from .metrics import OPSET_LOOKUP
+from .schemas import Collection, Document, EmbedModel
 
 
 class IotaDB:
@@ -15,6 +16,16 @@ class IotaDB:
         persist: bool = False,
         persist_dir: Optional[str] = None,
     ) -> None:
+        """
+        Initializes database instance
+
+        Args:
+            metric: distance metric used for vector search
+            embed_mode: name of sentence-transformer model
+            persist: whether to persis data to disk
+            persis_dir: directory to save to
+        """
+
         if metric not in OPSET_LOOKUP.keys():
             raise NotImplementedError("Algorithm not implemented.")
         if persist and persist_dir is None:
@@ -36,9 +47,11 @@ class IotaDB:
         documents: Optional[List[Document]] = None,
     ) -> None:
         """
-        creates a collection,
-        this method can be called with or without documents,
-        embeddings will be computed
+        Creates a collection with or without documents,
+
+        Args:
+            name: name of collection
+            documents: list of documents to create collection with
         """
         documents = [] if documents is None else documents
         embeddings = (
@@ -55,16 +68,34 @@ class IotaDB:
             self._save_to_disk(f"{self._collection.name}.pickle")
 
     def load_collection(self, file_path: str) -> None:
+        """
+        Loads a collection from file
+
+        Args:
+            file_path: path to collection file
+        """
         with open(file_path, "rb") as f:
             self._collection = load(f)
 
-    def get_collection(self, include_embedding: bool = False) -> None:
+    def get_collection(self, include_embedding: bool = False) -> str:
+        """
+        Gets and prints collection as a string
+
+        Args:
+            include_embedding: whether to include embedding vectors in output
+        """
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
 
         return self._collection.__str__(include_embeddings=include_embedding)
 
     def add_documents(self, documents: List[Document]) -> None:
+        """
+        Adds one or more documents to a collection
+
+        Args:
+            documents: a list of documents to add to an existing collection
+        """
         if self._collection is None:
             raise Exception(
                 "No collection exists. Create a collection before adding documents."
@@ -79,6 +110,13 @@ class IotaDB:
     def get_documents(
         self, ids: List[Union[str, int]], include_embeddings: bool = False
     ) -> Union[List[Document], Iterable[Tuple]]:
+        '''
+        Gets one or more documents from a collection
+
+        Args:
+            ids: list of document ids to retrieve from an existing collection
+            include_embeddings: whether to include embeddings during retrieval
+        '''
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
 
@@ -97,6 +135,14 @@ class IotaDB:
         new_text: str,
         new_metadata: Optional[Dict[str, Union[str, int, List, Dict]]] = None,
     ) -> None:
+        '''
+        Updates contents of a document given an id
+
+        Args:
+            id: a document's id
+            new_text: new text to update a document with
+            new_metadata: new metadata to update a document with
+        '''
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
 
@@ -111,6 +157,12 @@ class IotaDB:
             self._save_to_disk(f"{self._collection.name}.pickle")
 
     def remove_document(self, id: Union[str, int]) -> None:
+        '''
+        Removes a document given an id 
+
+        Args:
+            id: a document's id
+        '''
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
 
@@ -126,7 +178,17 @@ class IotaDB:
         top_k: int = 10,
         return_similarities: bool = False,
     ) -> List[Union[Document, Tuple[Document, float32]]]:
-        """Brute-force search"""
+        """
+        Performs a naive brute-force search against all vectors
+
+        Args:
+            query: query string to be used for vector search
+            top_k: number of results to return
+            return_similarities: whether to return similarity values along with documents
+
+        Returns:
+           A list of documents 
+        """
         if self._collection is None:
             raise Exception("No existing collection. Create one first.")
 

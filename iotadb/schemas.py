@@ -49,7 +49,6 @@ class Collection:
         embedding: List[ndarray[float32]],
         metadata: Dict[str, Union[str, int, List, Dict]],
     ) -> None:
-        # get index of document with id=id
         self.documents[index].text = text
         self.documents[index].metadata = metadata
         self.embeddings[index] = embedding
