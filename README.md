@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    <b>iota - A minimal local embedding database</b>. <br />
+    <b>iota - a minimal local embedding database</b>. <br />
 </p>
 
 ## Installation
