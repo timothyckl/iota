@@ -29,6 +29,8 @@ pip install iotadb
 
 ## Usage
 
+Here is a very simple example:
+
 ```python
 from iotadb import IotaDB, Document
 
