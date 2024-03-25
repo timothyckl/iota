@@ -10,8 +10,8 @@
 
 WIP
 
-[!IMPORTANT]
-This project is by no means scalable, but should suffice for smaller projects.
+> [!IMPORTANT]
+> This project is by no means scalable, but should suffice for smaller projects.
 
 ## Installation
 
