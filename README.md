@@ -54,3 +54,5 @@ More examples can be found in the `/examples` directory.
 - **Similarity Search**: Find similar items/documents based on their embeddings.
 
 ## Contributing
+
+Interested in contributing? Head over to the [Contribution Guide](CONTRIBUTING.md) for more details.
