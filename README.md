@@ -10,7 +10,7 @@
 ## Use cases
 
 - **Query with Natural Language**: Search for relevant documents using simple natural language queries.
-- **Contextual Summarization**: Integrate documents into LLM contexts like GPT-3 for enhanced summarization or analysis.
+- **Contextual Summarization**: Integrate documents into LLM contexts like GPT-3 for data-augmented tasks.
 - **Similarity Search**: Find similar items/documents based on their embeddings.
 
 ## Installation
