@@ -8,10 +8,16 @@
 
 ## Features
 
-- Simple interface: Easy-to-use API for database operations.
-- Lightweight implementation: Minimal resource utilization.
-- Local embedding storage: Stores embeddings locally for fast and retrieval.
-- Fast Indexing: Efficient embedding indexing for storage and retrieval.
+- **Simple interface**: Easy-to-use API for database operations.
+- **Lightweight implementation**: Minimal resource utilization.
+- **Local storage**: Stores embeddings locally for fast and retrieval.
+- **Fast Indexing**: Efficient embedding indexing for storage and retrieval.
+
+## Use cases
+
+- **Query with Natural Language**: Search for relevant documents using simple natural language queries.
+- **Contextual Summarization**: Integrate documents into LLM contexts like GPT-3 for data-augmented tasks.
+- **Similarity Search**: Find similar items/documents based on their embeddings.
 
 ## Installation
 
@@ -46,12 +52,6 @@ for doc, score in results:
 ```
 
 More examples can be found in the `/examples` directory.
-
-## Use cases
-
-- **Query with Natural Language**: Search for relevant documents using simple natural language queries.
-- **Contextual Summarization**: Integrate documents into LLM contexts like GPT-3 for data-augmented tasks.
-- **Similarity Search**: Find similar items/documents based on their embeddings.
 
 ## Contributing
 
