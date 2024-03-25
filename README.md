@@ -6,6 +6,13 @@
     <b>iota - a minimal local embedding database</b>. <br />
 </p>
 
+## Features
+
+- Simple interface: Easy-to-use API for database operations.
+- Lightweight implementation: Minimal resource utilization.
+- Local embedding storage: Stores embeddings locally for fast and retrieval.
+- Fast Indexing: Efficient embedding indexing for storage and retrieval.
+
 ## Installation
 
 Install the package via PyPI:
@@ -39,13 +46,6 @@ for doc, score in results:
 ```
 
 More examples can be found in the `/examples` directory.
-
-## Features
-
-- Simple interface: Easy-to-use API for database operations.
-- Lightweight implementation: Minimal resource utilization.
-- Local embedding storage: Stores embeddings locally for fast and retrieval.
-- Fast Indexing: Efficient embedding indexing for storage and retrieval.
 
 ## Use cases
 
