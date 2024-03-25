@@ -1,9 +1,16 @@
+<p align="center">
+  <img src="https://i.pinimg.com/originals/7e/10/c7/7e10c7a2f568a688a7e625ad6956fe63.jpg" alt="Iota logo">
+</p>
+
+<p align="center">
+    <b>Iota - A minimal implementation of a local embedding database</b>. <br />
+</p>
 
 ## Installation
 
 Install the package via PyPI:
 
-```
+```bash
 pip install iotadb
 ```
 
