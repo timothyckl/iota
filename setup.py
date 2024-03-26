@@ -5,7 +5,7 @@ with open("./README.md", "r") as f:
 
 setup(
     name="iotadb",
-    version="0.0.11",
+    version="0.0.13",
     description="Minimal implementation of a local embedding database",
     packages=["iotadb"],
     long_description=long_desc,
