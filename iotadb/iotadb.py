@@ -116,7 +116,7 @@ class IotaDB:
 
         if include_embeddings:
             embeddings = [self._collection.embeddings[i] for i in indices]
-            return zip(documents, embeddings)
+            return list(zip(documents, embeddings))
 
         return documents
 
