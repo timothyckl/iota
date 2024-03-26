@@ -1,11 +1,3 @@
---find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.2.1+cpu
-transformers==4.38.2
-tqdm==4.66.2
-numpy==1.25.2
-scikit-learn==1.4.0
-scipy==1.12.0
-nltk==3.8.1
-sentencepiece==0.1.99
-sentence-transformers==2.6.1
-pytest==7.4.4
+numpy
+sentence-transformers
+pytest
