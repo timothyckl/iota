@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/iota.png" alt="Iota logo">
+  <img src="assets/banner.png" alt="Iota logo">
 </p>
 
 <p align="center">
