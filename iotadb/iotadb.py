@@ -77,17 +77,8 @@ class IotaDB:
         with open(file_path, "rb") as f:
             self._collection = load(f)
 
-    def get_collection(self, include_embedding: bool = False) -> str:
-        """
-        Gets and prints collection as a string
-
-        Args:
-            include_embedding: whether to include embedding vectors in output
-        """
-        if self._collection is None:
-            raise Exception("No existing collection. Create one first.")
-
-        return self._collection.__str__(include_embeddings=include_embedding)
+    def get_collection(self) -> Collection:
+        return self._collection 
 
     def add_documents(self, documents: List[Document]) -> None:
         """
