@@ -19,7 +19,7 @@ setup(
         "Programming Language :: Python",
         "Operating System :: OS Independent",
     ],
-    install_requires=["numpy", "sentence-transformers"],
+    install_requires=["numpy==1.25.2", "sentence-transformers==2.6.1"],
     extras_require={"dev": ["pytest", "twine"]},
     python_requires=">=3.8",
 )
