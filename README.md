@@ -8,7 +8,7 @@
 
 ## Motivation
 
-WIP
+This project was done with the aim of reproducing some of my favourite features from existing vector stores while maintaining minimalism and simplicity.
 
 > [!IMPORTANT]
 > This is by no means scalable, but should suffice for smaller projects.
