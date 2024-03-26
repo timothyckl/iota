@@ -4,6 +4,9 @@ from uuid import uuid4
 
 from numpy import float32, ndarray
 from sentence_transformers import SentenceTransformer
+from torch import cuda
+
+DEVICE = "cuda" if cuda.is_available() else "cpu"
 
 
 @dataclass
@@ -13,7 +16,7 @@ class EmbedModel:
     tokenizer: Callable = field(init=False)
 
     def __post_init__(self) -> None:
-        self.model = SentenceTransformer(self.name)
+        self.model = SentenceTransformer(self.name, device=DEVICE)
         self.tokenizer = self.model[0].tokenizer
 
     def tokenize(self, input: str) -> List[str]:
